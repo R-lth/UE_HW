@@ -2,11 +2,13 @@
 
 
 #include "APAirplane.h"
+#include "Components/BoxComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 
-// Sets default values
 AAPAirplane::AAPAirplane()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// 충돌체
@@ -17,11 +19,13 @@ AAPAirplane::AAPAirplane()
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
 	BodyMesh->SetupAttachment(RootComponent);
 
-	PropellerLeftMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PropellerLeftMesh"));
-	PropellerLeftMesh->SetupAttachment(BodyMesh);
+	LeftMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftMesh"));
+	LeftMesh->SetupAttachment(BodyMesh);
+	LeftMesh->SetRelativeLocation(FVector(38.f, -20.f, 0.f));
 
-	PropellerRightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PropellerRightMesh"));
-	PropellerRightMesh->SetupAttachment(BodyMesh);
+	RightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightMesh"));
+	RightMesh->SetupAttachment(BodyMesh);
+	RightMesh->SetRelativeLocation(FVector(38.f, 20.f, 0.f));
 
 	// TPS 카메라
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -44,9 +48,17 @@ void AAPAirplane::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// 프로펠러 로컬 회전
+	if (LeftMesh) 
+	{
+		LeftMesh->AddLocalRotation(FRotator(0, 0, 1440.f * DeltaTime));
+	}
+	if (RightMesh) 
+	{
+		RightMesh->AddLocalRotation(FRotator(0, 0, 1440.f * DeltaTime));
+	}
 }
 
-// Called to bind functionality to input
 void AAPAirplane::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
