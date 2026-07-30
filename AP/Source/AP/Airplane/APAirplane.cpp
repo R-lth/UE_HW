@@ -9,6 +9,11 @@ AAPAirplane::AAPAirplane()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// 충돌체
+	Collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
+	RootComponent = Collider;
+
+	// 정적 메시
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
 	BodyMesh->SetupAttachment(RootComponent);
 
@@ -17,6 +22,14 @@ AAPAirplane::AAPAirplane()
 
 	PropellerRightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PropellerRightMesh"));
 	PropellerRightMesh->SetupAttachment(BodyMesh);
+
+	// TPS 카메라
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetupAttachment(RootComponent);
+	SpringArm->TargetArmLength = 180.f;
+
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	Camera->SetupAttachment(SpringArm);
 }
 
 // Called when the game starts or when spawned
