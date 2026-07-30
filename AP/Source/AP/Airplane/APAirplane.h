@@ -4,11 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "InputAction.h"
 #include "APAirplane.generated.h"
 
 class UBoxComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class UInputAction;
+class UFloatingPawnMovement;
 
 UCLASS()
 class AP_API AAPAirplane : public APawn
@@ -30,6 +33,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	void OnBoost(const FInputActionValue& Value);
+	void OnMove(const FInputActionValue& Value);
+	void OnFire();
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UBoxComponent> Collider;
@@ -48,4 +56,19 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UCameraComponent> Camera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UFloatingPawnMovement> Movement;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	float Boost = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
+	TObjectPtr<UInputAction> IA_Boost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
+	TObjectPtr<UInputAction> IA_Move;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
+	TObjectPtr<UInputAction> IA_Fire;
 };
