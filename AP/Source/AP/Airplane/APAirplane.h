@@ -71,4 +71,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
 	TObjectPtr<UInputAction> IA_Fire;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile") 
+	FVector MuzzleOffset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
+	TSubclassOf<class AAPProjectile> ProjectileClass;
 };

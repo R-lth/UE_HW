@@ -105,5 +105,6 @@ void AAPAirplane::OnMove(const FInputActionValue& Value)
 
 void AAPAirplane::OnFire()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Test"));
 }
 
