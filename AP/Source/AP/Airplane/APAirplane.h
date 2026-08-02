@@ -34,6 +34,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	UFUNCTION(BlueprintCallable, Category = "Configure")
+	void Configure(const float InMaxSpeed = 1200.f, const float InAcceleration = 800.f, const float InDeceleration = 400.f);
+
 private:
 	void OnMove();
 	void OnLook(const FInputActionValue& Value);

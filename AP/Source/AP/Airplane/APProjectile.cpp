@@ -40,7 +40,7 @@ void AAPProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	// 충돌 이벤트 관련 동적 델리게이트에 수신 함수(Callback 함수) 연동
-	Collider->OnComponentHit.AddDynamic(this, &AAPProjectile::ProcessHit);
+	Collider->OnComponentHit.AddDynamic(this, &AAPProjectile::OnComponentHitCallback);
 }
 
 // Called every frame
@@ -56,7 +56,19 @@ void AAPProjectile::FireInDirection(const FVector& ShootDirection)
 	Movement->Velocity = ShootDirection * Movement->InitialSpeed;
 }
 
-void AAPProjectile::ProcessHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void AAPProjectile::Configure(UNiagaraSystem* InImpactEffect, USoundBase* InImpactSound)
+{
+	ImpactEffect = InImpactEffect;
+	ImpactSound = InImpactSound;
+}
+
+void AAPProjectile::OnComponentHitCallback(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	ProcessHitEffect(Hit); // BP 구현 시 BP 호출. 그렇지 않을 시 C++ 호출
+	DeactivateProjectile();
+}
+
+void AAPProjectile::ProcessHitEffect_Implementation(const FHitResult& Hit)
 {
 	if (ImpactEffect)
 	{
@@ -67,8 +79,6 @@ void AAPProjectile::ProcessHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, Hit.ImpactPoint);
 	}
-
-	DeactivateProjectile();
 }
 
 void AAPProjectile::ActivateProjectile(const FTransform& SpawnTransform)

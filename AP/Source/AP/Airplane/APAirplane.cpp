@@ -99,6 +99,13 @@ void AAPAirplane::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	}
 }
 
+void AAPAirplane::Configure(const float InMaxSpeed, const float InAcceleration, const float InDeceleration)
+{
+	MaxSpeed = InMaxSpeed;
+	Acceleration = InAcceleration;
+	Deceleration = InDeceleration;
+}
+
 void AAPAirplane::OnMove()
 {
 	bIsMove = static_cast<uint8>(!bIsMove);

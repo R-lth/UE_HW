@@ -29,8 +29,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Configure")
+	void Configure(UNiagaraSystem* InImpactEffect, USoundBase* InImpactSound);
+
 	UFUNCTION()
-	void ProcessHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnComponentHitCallback(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Cooperation")
+	void ProcessHitEffect(const FHitResult& Hit);
+	void ProcessHitEffect_Implementation(const FHitResult& Hit);
 
 	void ActivateProjectile(const FTransform& SpawnTransform);
 	void DeactivateProjectile();
