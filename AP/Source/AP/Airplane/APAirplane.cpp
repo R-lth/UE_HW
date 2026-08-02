@@ -14,11 +14,10 @@ AAPAirplane::AAPAirplane()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	// 충돌체
+	// 컴포넌트
 	Collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
 	RootComponent = Collider;
 
-	// 정적 메시
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyMesh"));
 	BodyMesh->SetupAttachment(RootComponent);
 
@@ -30,7 +29,6 @@ AAPAirplane::AAPAirplane()
 	RightMesh->SetupAttachment(BodyMesh);
 	RightMesh->SetRelativeLocation(FVector(38.f, 20.f, 0.f));
 
-	// TPS 카메라
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->TargetArmLength = 180.f;
@@ -38,8 +36,10 @@ AAPAirplane::AAPAirplane()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 
-	// Pawn 기준 움직임 컴포넌트
 	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
+	Movement->MaxSpeed = MaxSpeed;
+	Movement->Acceleration = Acceleration;
+	Movement->Deceleration = Deceleration;
 
 	// 회전 
 	bUseControllerRotationPitch = false;
@@ -71,7 +71,10 @@ void AAPAirplane::Tick(float DeltaTime)
 	}
 
 	// 비행기 전진 이동
-	AddMovementInput(GetActorForwardVector(), Boost);
+	if (bIsMove) 
+	{
+		AddMovementInput(GetActorForwardVector(), 1.f);
+	}
 }
 
 void AAPAirplane::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -82,18 +85,18 @@ void AAPAirplane::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	if (UIC) 
 	{
-		UIC->BindAction(IA_Boost, ETriggerEvent::Triggered, this, &AAPAirplane::OnBoost);
 		UIC->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AAPAirplane::OnMove);
 		UIC->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &AAPAirplane::OnFire);
+		UIC->BindAction(IA_Look, ETriggerEvent::Triggered, this, &AAPAirplane::OnLook);
 	}
 }
 
-void AAPAirplane::OnBoost(const FInputActionValue& Value)
+void AAPAirplane::OnMove()
 {
-	Boost = Value.Get<float>();
+	bIsMove = static_cast<uint8>(!bIsMove);
 }
 
-void AAPAirplane::OnMove(const FInputActionValue& Value)
+void AAPAirplane::OnLook(const FInputActionValue& Value)
 {
 	FVector2D Dir = Value.Get<FVector2D>();
 

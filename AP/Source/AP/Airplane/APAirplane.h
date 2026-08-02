@@ -34,9 +34,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	void OnBoost(const FInputActionValue& Value);
-	void OnMove(const FInputActionValue& Value);
 	void OnFire();
+	void OnMove();
+	void OnLook(const FInputActionValue& Value);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -60,21 +60,24 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UFloatingPawnMovement> Movement;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	float Boost = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	float MaxSpeed = 1200.f; 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
-	TObjectPtr<UInputAction> IA_Boost;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	float Acceleration = 800.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	float Deceleration = 400.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
 	TObjectPtr<UInputAction> IA_Move;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
+	TObjectPtr<UInputAction> IA_Look;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
 	TObjectPtr<UInputAction> IA_Fire;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile") 
-	FVector MuzzleOffset;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
-	TSubclassOf<class AAPProjectile> ProjectileClass;
 };
