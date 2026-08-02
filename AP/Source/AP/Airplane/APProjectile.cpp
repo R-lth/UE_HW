@@ -5,6 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "NiagaraFunctionLibrary.h" 
+#include "Kismet/GameplayStatics.h" 
 
 // Sets default values
 AAPProjectile::AAPProjectile()
@@ -36,7 +38,9 @@ AAPProjectile::AAPProjectile()
 void AAPProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// 충돌 이벤트 관련 동적 델리게이트에 수신 함수(Callback 함수) 연동
+	Collider->OnComponentHit.AddDynamic(this, &AAPProjectile::ProcessHit);
 }
 
 // Called every frame
@@ -52,3 +56,17 @@ void AAPProjectile::FireInDirection(const FVector& ShootDirection)
 	Movement->Velocity = ShootDirection * Movement->InitialSpeed;
 }
 
+void AAPProjectile::ProcessHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (ImpactEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+	}
+
+	if (ImpactSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, Hit.ImpactPoint);
+	}
+
+	Destroy();
+}

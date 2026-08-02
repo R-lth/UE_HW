@@ -13,13 +13,11 @@ void AAPWeapon::Tick(float DeltaTime)
 {
 	Timer = FMath::Clamp(Timer - DeltaTime, 0, CoolTime);
 
-	// todo. collidion preset
 	// 일정 시간 간격으로 연사 가능
 	if (bCanFire)
 	{
 		if (Timer <= 0.f)
 		{
-			// todo. effect하고 sound
 			Fire();
 			Timer = CoolTime;
 		}
