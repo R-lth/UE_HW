@@ -32,6 +32,10 @@ public:
 	UFUNCTION()
 	void ProcessHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	void ActivateProjectile(const FTransform& SpawnTransform);
+	void DeactivateProjectile();
+	bool IsActive() const { return bIsActive; }
+
 private:
 	void FireInDirection(const FVector& ShootDirection);
 
@@ -50,4 +54,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	TObjectPtr<USoundBase> ImpactSound;
+
+private:
+	uint8 bIsActive : 1 = false;
+	FTimerHandle LifeTimerHandle;
 };

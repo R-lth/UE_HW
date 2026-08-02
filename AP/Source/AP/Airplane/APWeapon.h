@@ -6,9 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "APWeapon.generated.h"
 
-/**
- * 
- */
+class AAPProjectile;
+
 UCLASS()
 class AP_API AAPWeapon : public AActor
 {
@@ -17,6 +16,10 @@ class AP_API AAPWeapon : public AActor
 public:
 	// Sets default values for this pawn's properties
 	AAPWeapon();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 public:
 	// Called every frame
@@ -28,13 +31,18 @@ public:
 
 private:
 	void Fire();
+	void InitializePool();
+	TObjectPtr<AAPProjectile> GetAvailableProjectile();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
 	TSubclassOf<class AAPProjectile> ProjectileClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
-	FVector MuzzleOffset;
+	UPROPERTY(EditAnywhere, Category = "Object Pool")
+	int32 InitialPoolSize = 20;
+
+	UPROPERTY()
+	TArray<TObjectPtr<AAPProjectile>> ProjectilePool;
 
 private:
 	uint8 bCanFire : 1 = false;

@@ -9,8 +9,17 @@ AAPWeapon::AAPWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AAPWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	InitializePool();
+}
+
 void AAPWeapon::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	Timer = FMath::Clamp(Timer - DeltaTime, 0, CoolTime);
 
 	// 일정 시간 간격으로 연사 가능
@@ -36,6 +45,41 @@ void AAPWeapon::OnStopFire()
 
 void AAPWeapon::Fire()
 {
-	// todo. 오브젝트 풀링
-	GetWorld()->SpawnActor<AAPProjectile>(ProjectileClass, GetActorTransform());
+	if (TObjectPtr<AAPProjectile> Projectile = GetAvailableProjectile()) 
+	{
+		Projectile->ActivateProjectile(GetActorTransform());
+	}
+}
+
+void AAPWeapon::InitializePool()
+{
+	if (!ProjectileClass) { return; }
+
+	for (int32 i = 0; i < InitialPoolSize; ++i)
+	{
+		TObjectPtr<AAPProjectile> Projectile = GetWorld()->SpawnActor<AAPProjectile>(ProjectileClass, FVector::ZeroVector, FRotator::ZeroRotator);
+
+		if (Projectile)
+		{
+#if WITH_EDITOR
+			Projectile->SetFolderPath(TEXT("Projectiles"));
+#endif
+
+			Projectile->DeactivateProjectile();
+			ProjectilePool.Add(Projectile);
+		}
+	}
+}
+
+TObjectPtr<AAPProjectile> AAPWeapon::GetAvailableProjectile()
+{
+	for (TObjectPtr<AAPProjectile> Projectile : ProjectilePool)
+	{
+		if (IsValid(Projectile) && !Projectile->IsActive())
+		{
+			return Projectile;
+		}
+	}
+
+	return nullptr;
 }

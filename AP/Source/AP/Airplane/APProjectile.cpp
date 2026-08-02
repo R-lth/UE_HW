@@ -68,5 +68,41 @@ void AAPProjectile::ProcessHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, Hit.ImpactPoint);
 	}
 
-	Destroy();
+	DeactivateProjectile();
+}
+
+void AAPProjectile::ActivateProjectile(const FTransform& SpawnTransform)
+{
+	SetActorTransform(SpawnTransform);
+
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+	SetActorTickEnabled(true);
+
+	bIsActive = true;
+
+	FireInDirection(GetActorForwardVector());
+	Movement->Activate(true);
+
+	GetWorldTimerManager().SetTimer(
+		LifeTimerHandle,
+		this,
+		&AAPProjectile::DeactivateProjectile,
+		3.f,
+		false
+	);
+}
+
+void AAPProjectile::DeactivateProjectile()
+{
+	GetWorldTimerManager().ClearTimer(LifeTimerHandle);
+
+	bIsActive = false;
+
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	SetActorTickEnabled(false);
+
+	Movement->StopMovementImmediately();
+	Movement->Deactivate();
 }
