@@ -14,7 +14,7 @@ AAPProjectile::AAPProjectile()
 
 	// 충돌체
 	Collider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collider"));
-	Collider->InitCapsuleSize(30.f, 5.f);
+	Collider->InitCapsuleSize(5.f, 30.f);
 	RootComponent = Collider;
 
 	// 정적 메쉬

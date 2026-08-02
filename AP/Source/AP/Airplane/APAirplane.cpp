@@ -41,6 +41,9 @@ AAPAirplane::AAPAirplane()
 	Movement->Acceleration = Acceleration;
 	Movement->Deceleration = Deceleration;
 
+	ChildActorComp = CreateDefaultSubobject<UChildActorComponent>(TEXT("ChildActorComp"));
+	ChildActorComp->SetupAttachment(BodyMesh, FName(TEXT("SpawnSocket")));
+
 	// 회전 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -53,7 +56,9 @@ AAPAirplane::AAPAirplane()
 void AAPAirplane::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// 자식 액터
+	ChildActor = Cast<AAPWeapon>(ChildActorComp->GetChildActor());
 }
 
 void AAPAirplane::Tick(float DeltaTime)
@@ -86,8 +91,10 @@ void AAPAirplane::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	if (UIC) 
 	{
 		UIC->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AAPAirplane::OnMove);
-		UIC->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &AAPAirplane::OnFire);
 		UIC->BindAction(IA_Look, ETriggerEvent::Triggered, this, &AAPAirplane::OnLook);
+		UIC->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &AAPAirplane::OnStartFire);
+		UIC->BindAction(IA_Fire, ETriggerEvent::Completed, this, &AAPAirplane::OnStopFire);
+		UIC->BindAction(IA_Fire, ETriggerEvent::Canceled, this, &AAPAirplane::OnStopFire);
 	}
 }
 
@@ -106,8 +113,19 @@ void AAPAirplane::OnLook(const FInputActionValue& Value)
 	AddActorLocalRotation(FRotator(0, 0, Dir.Y) * 60 * UGameplayStatics::GetWorldDeltaSeconds(GetWorld()));
 }
 
-void AAPAirplane::OnFire()
+void AAPAirplane::OnStartFire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Test"));
+	if (ChildActor) 
+	{
+		ChildActor->OnStartFire();
+	}
+}
+
+void AAPAirplane::OnStopFire()
+{
+	if (ChildActor) 
+	{
+		ChildActor->OnStopFire();
+	}
 }
 

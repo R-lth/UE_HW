@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "InputAction.h"
+#include "APWeapon.h"
 #include "APAirplane.generated.h"
 
 class UBoxComponent;
@@ -34,9 +35,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	void OnFire();
 	void OnMove();
 	void OnLook(const FInputActionValue& Value);
+	void OnStartFire();
+	void OnStopFire();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -70,6 +72,7 @@ public:
 	float Deceleration = 400.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UChildActorComponent> ChildActorComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
 	TObjectPtr<UInputAction> IA_Move;
@@ -80,4 +83,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs")
 	TObjectPtr<UInputAction> IA_Fire;
 
+private:
+	uint8 bIsMove : 1 = false;
+	TObjectPtr<AAPWeapon> ChildActor;
 };
